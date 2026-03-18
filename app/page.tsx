@@ -9,8 +9,8 @@ import { ExamplesSection, type ExampleProduct } from "@/components/examples-sect
 import { TrustSection } from "@/components/trust-section"
 import { Footer } from "@/components/footer"
 import { AuthModal } from "@/components/auth-modal"
-import jsPDF from "jspdf"
-import html2canvas from "html2canvas"
+import * as htmlToImage from 'html-to-image';
+import { jsPDF } from "jspdf";
 
 // Kadangi nebėra 4 šablonų, naudojame vieną pagrindinį "b2b-pro"
 export type Template = string;
