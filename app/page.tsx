@@ -67,14 +67,19 @@ export default function Home() {
       return
     }
 
-    // 2. Patikra: Ar turi siuntimų?
-    if (downloads <= 0) {
+    // --- NAUJA DALIS: ADMIN IŠIMTIS ---
+    // Jei tu esi prisijungusi su savo admin paštu, leidžiame siųstis visada
+    const isAdmin = initialProductData?.contactEmail === "hellomoofty@gmail.com" || 
+                    initialProductData?.contactEmail === "edraftstudio@gmail.com";
+
+    // 2. Patikra: Ar turi siuntimų? (Adminui šita patikra negalioja)
+    if (downloads <= 0 && !isAdmin) {
       const pricingSection = document.getElementById("pricing")
       pricingSection?.scrollIntoView({ behavior: "smooth" })
       return
     }
+    // --- PABAIGA ---
 
-    // 3. Surandame lapo elementą (ID turi sutapti su ProductPreview komponente)
     const element = document.getElementById("product-sheet-pdf")
     if (!element) {
       alert("Klaida: Nepavyko rasti lapo turinio peržiūrai.")
@@ -82,21 +87,34 @@ export default function Home() {
     }
 
     try {
-      // Sukuriame "nuotrauką" iš HTML
+      console.log("Pradedamas PDF generavimas..."); // Pridėk šitą, kad matytum konsolėje
       const canvas = await html2canvas(element, {
-        scale: 2, // Aukšta kokybė
-        useCORS: true, // Nuotraukoms iš išorinių serverių
+        scale: 2,
+        useCORS: true,
         backgroundColor: "#ffffff",
       })
 
       const imgData = canvas.toDataURL("image/png")
-      
-      // Sukuriame A4 PDF
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       })
+
+      pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
+      const fileName = currentProductData.productName?.trim() || "produkto-lapas"
+      pdf.save(`${fileName}.pdf`)
+
+      // Atimame siuntimą tik jei tai ne adminas
+      if (!isAdmin) {
+        setDownloads((prev) => prev - 1)
+      }
+
+    } catch (error) {
+      console.error("PDF generavimo klaida:", error)
+      alert("Įvyko klaida generuojant PDF failą.")
+    }
+  }
 
       pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
       
