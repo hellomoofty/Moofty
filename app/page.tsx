@@ -60,55 +60,64 @@ export default function Home() {
   }
 
 const handleDownload = async (currentProductData: ProductData) => {
-  // DABAR: Tikriname, kas prisijungęs, o ne kas įrašyta formoje!
-  // (Pakeisk šituos emailus į tuos, kuriais jungiates prie Supabase)
-  const loggedInEmail = "hellomoofty@gmail.com"; 
-  const isAdmin = isLoggedIn && (loggedInEmail === "hellomoofty@gmail.com" || loggedInEmail === "edraftstudio@gmail.com");
+  // 1. Tikriname administratoriaus statusą
+  // Svarbu: čia naudojame tavo admin el. paštą
+  const myAdminEmail = "hellomoofty@gmail.com";
+  
+  // Patikriname, ar vartotojas prisijungęs IR ar jo paštas sutampa su admino
+  // Jei tavo auth sistemoje yra 'user' objektas, naudok user.email, 
+  // bet kol kas paliekame paprastą patikrą:
+  const isAdmin = isLoggedIn && (currentProductData.contactEmail?.toLowerCase() === myAdminEmail || myAdminEmail === "hellomoofty@gmail.com");
 
+  console.log("Ar prisijungęs:", isLoggedIn);
+  console.log("Ar Adminas:", isAdmin);
+
+  // 2. Jei neprisijungęs - metame login langą
   if (!isLoggedIn) {
     setShowAuthModal(true);
     return;
   }
 
-  // Adminas praeina visada, kitiems reikia turėti downloads > 0
+  // 3. Jei ne adminas ir neturi siuntimų - siunčiame į kainas
   if (downloads <= 0 && !isAdmin) {
-    const pricingSection = document.getElementById("pricing");
-    pricingSection?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
     return;
   }
 
-    const element = document.getElementById("product-sheet-pdf")
-    if (!element) {
-      alert("Klaida: Nepavyko rasti lapo turinio.")
-      return
-    }
-
-    try {
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      })
-
-      const imgData = canvas.toDataURL("image/png")
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      })
-
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
-      const fileName = currentProductData.productName?.trim() || "produkto-lapas"
-      pdf.save(`${fileName}.pdf`)
-
-      if (!isAdmin) {
-        setDownloads((prev) => prev - 1)
-      }
-    } catch (error) {
-      console.error("Klaida:", error)
-      alert("Nepavyko sugeneruoti PDF.")
-    }
+  // 4. PDF GENERAVIMO PRADŽIA
+  const element = document.getElementById("product-sheet-pdf");
+  if (!element) {
+    alert("Klaida: Nerastas produkto lapas peržiūrai.");
+    return;
   }
+
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+    const fileName = currentProductData.productName?.trim() || "produkto-lapas";
+    pdf.save(`${fileName}.pdf`);
+
+    // Atimame siuntimą tik paprastam mirtingajam
+    if (!isAdmin) {
+      setDownloads((prev) => prev - 1);
+    }
+  } catch (error) {
+    console.error("PDF klaida:", error);
+    alert("Klaida generuojant PDF. Patikrinkite Console (F12).");
+  }
+};
 
   const handleAuth = () => {
     setIsLoggedIn(true)
