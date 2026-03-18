@@ -60,8 +60,6 @@ export default function Home() {
   }
 
 const handleDownload = async (currentProductData: ProductData) => {
-  const isAdmin = isLoggedIn;
-
   if (!isLoggedIn) {
     setShowAuthModal(true);
     return;
@@ -71,61 +69,36 @@ const handleDownload = async (currentProductData: ProductData) => {
   if (!element) return;
 
   try {
-    console.log("Pradedamas PDF generavimas su spalvų konvertavimu...");
+    console.log("Generuojama naudojant modernią biblioteką...");
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: "#ffffff",
-      onclone: (clonedDoc) => {
-        const el = clonedDoc.getElementById("product-sheet-pdf");
-        if (el) {
-          // 1. Surandame VISUS elementus peržiūros lange
-          const allElements = el.getElementsByTagName("*");
-          
-          for (let i = 0; i < allElements.length; i++) {
-            const node = allElements[i] as HTMLElement;
-            
-            // 2. IŠVALOME ŠEŠĖLIUS (didžiausia "lab" spalvų tikimybė)
-            // Pakeičiame modernius Tailwind šešėlius į paprastą juodą skaidrumą
-            const style = window.getComputedStyle(node);
-            if (style.boxShadow !== 'none') {
-              node.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
-            }
-
-            // 3. IŠVALOME BLUR (jei html2canvas vis tiek lūžta)
-            if (style.filter.includes('blur')) {
-              node.style.filter = 'none'; // Laikinai išjungiam blur tik PDF'ui
-            }
-
-            // 4. FIX: Jei fono spalva yra lab/oklch, paverčiam ją į HEX/RGB
-            // Tai priverčia naršyklę interpretuoti spalvą standartiškai
-            if (node.style.backgroundColor.includes('lab') || node.style.backgroundColor.includes('oklch')) {
-              node.style.backgroundColor = '#ffffff'; 
-            }
-          }
-        }
-      }
+    // 1. Sukuriame aukštos kokybės vaizdą (PNG)
+    // Ši funkcija puikiai supranta šešėlius ir lab() spalvas
+    const dataUrl = await htmlToImage.toPng(element, {
+      quality: 1,
+      pixelRatio: 2, // Užtikrina ryškumą
+      skipFonts: false,
     });
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+    // 2. Įdedame į PDF
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "mm",
       format: "a4",
     });
 
-    pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+    pdf.addImage(dataUrl, "PNG", 0, 0, 210, 297);
+    
     const title = currentProductData.productName?.trim() || "produkto-lapas";
     pdf.save(`${title}.pdf`);
 
-    if (!isAdmin) setDownloads((prev) => prev - 1);
+    if (!isLoggedIn) { // Tavo admin logika čia
+      setDownloads((prev) => prev - 1);
+    }
 
+    console.log("PDF sėkmingai sugeneruotas!");
   } catch (error: any) {
-    console.error("DETALI KLAIDA:", error);
-    // Jei vis tiek meta "lab", vadinasi problema yra pačiame Tailwind konfigūracijoje
-    alert("Klaida: " + error.message + ". Pabandykite nuimti 'shadow-2xl' nuo pagrindinio rėmo.");
+    console.error("PDF klaida:", error);
+    alert("Net ir su nauja biblioteka iškilo bėda: " + error.message);
   }
 };
   const handleAuth = () => {
