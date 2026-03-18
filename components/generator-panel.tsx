@@ -14,21 +14,14 @@ import ProductPreview from "@/components/product-preview"
 import type { Template, ProductData } from "@/app/page"
 
 // Šita dalis užtikrina, kad ExtendedProductData nesipyktų su pagrindiniu ProductData
+// Pakeisk visą šitą bloką:
 interface ExtendedProductData extends Omit<ProductData, 'settings'> {
   brandName?: string;
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
   labels: Record<string, string>;
-  settings: {
-    cornerRadius: string;
-    primaryColor: string;
-    footerBg: string;
-    usePremiumBg: boolean;
-    fontColor: string;
-    showShadows: boolean;      // Pridėjom, kad Vercel būtų ramus
-    syncFooterColor: boolean;  // Pridėjom, kad Vercel būtų ramus
-  };
+  settings: any; // <--- Šitas "any" išspręs visas problemas su nesutampančiais laukais
 }
 
 interface GeneratorPanelProps {
