@@ -68,9 +68,9 @@ export default function Home() {
     }
 
     // --- NAUJA DALIS: ADMIN IŠIMTIS ---
-    // Jei tu esi prisijungusi su savo admin paštu, leidžiame siųstis visada
-    const isAdmin = initialProductData?.contactEmail === "hellomoofty@gmail.com" || 
-                    initialProductData?.contactEmail === "edraftstudio@gmail.com";
+    // Naudojame currentProductData, nes initialProductData gali būti undefined
+    const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
+                    currentProductData.contactEmail?.toLowerCase() === "edraftstudio@gmail.com";
 
     // 2. Patikra: Ar turi siuntimų? (Adminui šita patikra negalioja)
     if (downloads <= 0 && !isAdmin) {
@@ -87,7 +87,7 @@ export default function Home() {
     }
 
     try {
-      console.log("Pradedamas PDF generavimas..."); // Pridėk šitą, kad matytum konsolėje
+      console.log("Pradedamas PDF generavimas...");
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -102,6 +102,7 @@ export default function Home() {
       })
 
       pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
+      
       const fileName = currentProductData.productName?.trim() || "produkto-lapas"
       pdf.save(`${fileName}.pdf`)
 
