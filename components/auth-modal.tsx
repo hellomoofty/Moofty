@@ -18,22 +18,21 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  // Tavo el. paštas - sistemos raktas
-  const ADMIN_EMAIL = "edraftstudio@gmail.com";
+ // Pakeisk šitą eilutę, kad sutaptų su tuo, ką matai Supabase
+const ADMIN_EMAIL = "hellomoofty@gmail.com";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
 
-    // Jei jungiasi savininkė, leidžiame iškart
-    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      console.log("Sveika sugrįžusi, edraftstudio!");
-      onAuth();
-      return;
-    }
-
-    // Visiems kitiems - standartinė onAuth funkcija
-    onAuth()
+  // Dabar sistema atpažins tavo tikrąjį Supabase vartotoją
+  if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    console.log("Sveika sugrįžusi, Administratorė!");
+    onAuth();
+    return;
   }
+
+  onAuth()
+}
 
   const isOwner = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
