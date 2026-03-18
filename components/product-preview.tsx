@@ -4,19 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import type { Template, ProductData } from "@/app/page"
 import { Mail, Globe, Phone, CheckCircle2, AlertCircle } from "lucide-react"
 
-interface ExtendedProductData extends ProductData {
+interface ExtendedProductData extends Omit<ProductData, 'settings'> {
   brandName?: string;
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
-  labels?: Record<string, string>;
-  settings?: {
-    cornerRadius?: string;
-    primaryColor?: string;
-    footerBg?: string;
-    usePremiumBg?: boolean;
-    fontColor?: string;
-  };
+  labels?: any;
+  settings?: any; 
 }
 
 export default function ProductPreview({
