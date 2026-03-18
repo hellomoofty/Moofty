@@ -59,21 +59,18 @@ export default function Home() {
     window.scrollTo(0, 0)
   }
 
-  // PDF GENERAVIMO IR SIUNTIMO FUNKCIJA
   const handleDownload = async (currentProductData: ProductData) => {
-    if (!isLoggedIn) {
-  setShowAuthModal(true)
-  return
-}
-if (downloads <= 0 && !isAdmin) {
-  return
-}
-    
-    // Patikriname, ar vartotojas yra adminas
+    // 1. Pirmiausia sukuriame isAdmin kintamąjį
     const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
                     currentProductData.contactEmail?.toLowerCase() === "edraftstudio@gmail.com";
 
-    // 2. Patikra: Ar turi siuntimų? (Adminui šita patikra negalioja)
+    // 2. Patikra: Ar prisijungęs?
+    if (!isLoggedIn) {
+      setShowAuthModal(true)
+      return
+    }
+
+    // 3. Patikra: Ar turi siuntimų? (Adminui leidžiame)
     if (downloads <= 0 && !isAdmin) {
       const pricingSection = document.getElementById("pricing")
       pricingSection?.scrollIntoView({ behavior: "smooth" })
@@ -82,12 +79,11 @@ if (downloads <= 0 && !isAdmin) {
 
     const element = document.getElementById("product-sheet-pdf")
     if (!element) {
-      alert("Klaida: Nepavyko rasti lapo turinio peržiūrai.")
+      alert("Klaida: Nepavyko rasti lapo turinio.")
       return
     }
 
     try {
-      console.log("Pradedamas PDF generavimas...");
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -102,18 +98,15 @@ if (downloads <= 0 && !isAdmin) {
       })
 
       pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
-      
       const fileName = currentProductData.productName?.trim() || "produkto-lapas"
       pdf.save(`${fileName}.pdf`)
 
-      // 4. Atimame siuntimą tik jei tai ne adminas
       if (!isAdmin) {
         setDownloads((prev) => prev - 1)
       }
-
     } catch (error) {
-      console.error("PDF generavimo klaida:", error)
-      alert("Įvyko klaida generuojant PDF failą.")
+      console.error("Klaida:", error)
+      alert("Nepavyko sugeneruoti PDF.")
     }
   }
 
