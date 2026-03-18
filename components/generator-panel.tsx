@@ -13,7 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProductPreview from "@/components/product-preview"
 import type { Template, ProductData } from "@/app/page"
 
-interface ExtendedProductData extends ProductData {
+// Šita dalis užtikrina, kad ExtendedProductData nesipyktų su pagrindiniu ProductData
+interface ExtendedProductData extends Omit<ProductData, 'settings'> {
   brandName?: string;
   contactEmail?: string;
   contactPhone?: string;
@@ -25,8 +26,8 @@ interface ExtendedProductData extends ProductData {
     footerBg: string;
     usePremiumBg: boolean;
     fontColor: string;
-    showShadows: boolean;
-    syncFooterColor: boolean; 
+    showShadows: boolean;      // Pridėjom, kad Vercel būtų ramus
+    syncFooterColor: boolean;  // Pridėjom, kad Vercel būtų ramus
   };
 }
 
