@@ -67,8 +67,7 @@ export default function Home() {
       return
     }
 
-    // --- NAUJA DALIS: ADMIN IŠIMTIS ---
-    // Naudojame currentProductData, nes initialProductData gali būti undefined
+    // Patikriname, ar vartotojas yra adminas
     const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
                     currentProductData.contactEmail?.toLowerCase() === "edraftstudio@gmail.com";
 
@@ -78,7 +77,6 @@ export default function Home() {
       pricingSection?.scrollIntoView({ behavior: "smooth" })
       return
     }
-    // --- PABAIGA ---
 
     const element = document.getElementById("product-sheet-pdf")
     if (!element) {
@@ -106,25 +104,10 @@ export default function Home() {
       const fileName = currentProductData.productName?.trim() || "produkto-lapas"
       pdf.save(`${fileName}.pdf`)
 
-      // Atimame siuntimą tik jei tai ne adminas
+      // 4. Atimame siuntimą tik jei tai ne adminas
       if (!isAdmin) {
         setDownloads((prev) => prev - 1)
       }
-
-    } catch (error) {
-      console.error("PDF generavimo klaida:", error)
-      alert("Įvyko klaida generuojant PDF failą.")
-    }
-  }
-
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297)
-      
-      // Išsaugojame su produkto pavadinimu
-      const fileName = currentProductData.productName?.trim() || "produkto-lapas"
-      pdf.save(`${fileName}.pdf`)
-
-      // 4. Tik sėkmingai sugeneravus atimame vieną siuntimą
-      setDownloads((prev) => prev - 1)
 
     } catch (error) {
       console.error("PDF generavimo klaida:", error)
