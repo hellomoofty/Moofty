@@ -61,6 +61,13 @@ export default function Home() {
 
   // PDF GENERAVIMO IR SIUNTIMO FUNKCIJA
   const handleDownload = async (currentProductData: ProductData) => {
+    if (!isLoggedIn) {
+  setShowAuthModal(true)
+  return
+}
+if (downloads <= 0 && !isAdmin) {
+  return
+}
     
     // Patikriname, ar vartotojas yra adminas
     const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
