@@ -59,23 +59,23 @@ export default function Home() {
     window.scrollTo(0, 0)
   }
 
-  const handleDownload = async (currentProductData: ProductData) => {
-    // 1. Pirmiausia sukuriame isAdmin kintamąjį
-    const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
-                    currentProductData.contactEmail?.toLowerCase() === "edraftstudio@gmail.com";
+const handleDownload = async (currentProductData: ProductData) => {
+  // DABAR: Tikriname, kas prisijungęs, o ne kas įrašyta formoje!
+  // (Pakeisk šituos emailus į tuos, kuriais jungiates prie Supabase)
+  const loggedInEmail = "hellomoofty@gmail.com"; 
+  const isAdmin = isLoggedIn && (loggedInEmail === "hellomoofty@gmail.com" || loggedInEmail === "edraftstudio@gmail.com");
 
-    // 2. Patikra: Ar prisijungęs?
-    if (!isLoggedIn) {
-      setShowAuthModal(true)
-      return
-    }
+  if (!isLoggedIn) {
+    setShowAuthModal(true);
+    return;
+  }
 
-    // 3. Patikra: Ar turi siuntimų? (Adminui leidžiame)
-    if (downloads <= 0 && !isAdmin) {
-      const pricingSection = document.getElementById("pricing")
-      pricingSection?.scrollIntoView({ behavior: "smooth" })
-      return
-    }
+  // Adminas praeina visada, kitiems reikia turėti downloads > 0
+  if (downloads <= 0 && !isAdmin) {
+    const pricingSection = document.getElementById("pricing");
+    pricingSection?.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
 
     const element = document.getElementById("product-sheet-pdf")
     if (!element) {
