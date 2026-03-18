@@ -61,12 +61,7 @@ export default function Home() {
 
   // PDF GENERAVIMO IR SIUNTIMO FUNKCIJA
   const handleDownload = async (currentProductData: ProductData) => {
-    // 1. Patikra: Ar prisijungęs?
-    if (!isLoggedIn) {
-      setShowAuthModal(true)
-      return
-    }
-
+    
     // Patikriname, ar vartotojas yra adminas
     const isAdmin = currentProductData.contactEmail?.toLowerCase() === "hellomoofty@gmail.com" || 
                     currentProductData.contactEmail?.toLowerCase() === "edraftstudio@gmail.com";
