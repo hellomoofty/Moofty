@@ -71,37 +71,39 @@ const handleDownload = async (currentProductData: ProductData) => {
   if (!element) return;
 
   try {
-    console.log("Vykdomas agresyvus spalvų valymas...");
-    
+    console.log("Pradedamas PDF generavimas su spalvų konvertavimu...");
+
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: "#ffffff",
       onclone: (clonedDoc) => {
-        // 1. Surandame visus elementus kopijoje
-        const allElements = clonedDoc.getElementsByTagName("*");
-        
-        for (let i = 0; i < allElements.length; i++) {
-          const node = allElements[i] as HTMLElement;
-          const style = window.getComputedStyle(node);
-
-          // 2. Jei elementas naudoja modernų filtrą (blur) arba šešėlį, 
-          // kuris dažnai naudoja lab() spalvas, mes jį "sušvelniname"
-          if (style.filter.includes('blur') || style.backdropFilter.includes('blur')) {
-             // Vietoj to, kad ištrintume, tiesiog nuimame filtrą generavimo momentui
-             node.style.filter = 'none';
-             node.style.backdropFilter = 'none';
-          }
-
-          // 3. Ištaisome "lab" spalvas šešėliuose (didžiausia problema)
-          if (style.boxShadow.includes('lab') || style.boxShadow.includes('oklch')) {
-            node.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'; // Pakeičiam į saugų šešėlį
-          }
+        const el = clonedDoc.getElementById("product-sheet-pdf");
+        if (el) {
+          // 1. Surandame VISUS elementus peržiūros lange
+          const allElements = el.getElementsByTagName("*");
           
-          // 4. Jei fonas naudoja lab/oklch, pakeičiam į paprastą spalvą
-          if (style.backgroundColor.includes('lab') || style.backgroundColor.includes('oklch')) {
-             node.style.backgroundColor = '#ffffff'; 
+          for (let i = 0; i < allElements.length; i++) {
+            const node = allElements[i] as HTMLElement;
+            
+            // 2. IŠVALOME ŠEŠĖLIUS (didžiausia "lab" spalvų tikimybė)
+            // Pakeičiame modernius Tailwind šešėlius į paprastą juodą skaidrumą
+            const style = window.getComputedStyle(node);
+            if (style.boxShadow !== 'none') {
+              node.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+            }
+
+            // 3. IŠVALOME BLUR (jei html2canvas vis tiek lūžta)
+            if (style.filter.includes('blur')) {
+              node.style.filter = 'none'; // Laikinai išjungiam blur tik PDF'ui
+            }
+
+            // 4. FIX: Jei fono spalva yra lab/oklch, paverčiam ją į HEX/RGB
+            // Tai priverčia naršyklę interpretuoti spalvą standartiškai
+            if (node.style.backgroundColor.includes('lab') || node.style.backgroundColor.includes('oklch')) {
+              node.style.backgroundColor = '#ffffff'; 
+            }
           }
         }
       }
@@ -115,11 +117,15 @@ const handleDownload = async (currentProductData: ProductData) => {
     });
 
     pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
-    pdf.save(`${currentProductData.productName || "preke"}.pdf`);
+    const title = currentProductData.productName?.trim() || "produkto-lapas";
+    pdf.save(`${title}.pdf`);
+
+    if (!isAdmin) setDownloads((prev) => prev - 1);
 
   } catch (error: any) {
-    console.error("PDF klaida:", error);
-    alert("Klaida vis dar išlieka. Priežastis: " + error.message);
+    console.error("DETALI KLAIDA:", error);
+    // Jei vis tiek meta "lab", vadinasi problema yra pačiame Tailwind konfigūracijoje
+    alert("Klaida: " + error.message + ". Pabandykite nuimti 'shadow-2xl' nuo pagrindinio rėmo.");
   }
 };
   const handleAuth = () => {
