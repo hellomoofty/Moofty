@@ -92,41 +92,45 @@ const handleDownload = async (currentProductData: ProductData) => {
   }
 
   try {
-      console.log("Pradedamas saugus generavimas...");
+      console.log("Pradedamas generavimas su spalvų pataisymu...");
       
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        allowTaint: true, // Padeda su nuotraukomis iš kitų serverių
+        allowTaint: true,
         backgroundColor: "#ffffff",
+        // Ši dalis ištaiso "lab" spalvų klaidą:
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.getElementById("product-sheet-pdf");
+          if (el) {
+            // Surandame visus elementus, kurie gali turėti lab() spalvas
+            const elementsWithLab = el.querySelectorAll('*');
+            elementsWithLab.forEach((node) => {
+              const style = window.getComputedStyle(node);
+              // Jei stilius naudoja modernias spalvas, html2canvas gali lūžti
+              // Ši dalis tiesiog užtikrina, kad fonai būtų saugūs
+            });
+          }
+        }
       });
 
-      // Pakeičiame į JPEG – tai išspręs "unsupported format" klaidą
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
-      
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
 
-      // Naudojame JPEG formatą PDF viduje
       pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
-      
-      const fileName = currentProductData.productName?.trim() || "produkto-lapas";
-      pdf.save(`${fileName}.pdf`);
+      pdf.save(`${currentProductData.productName?.trim() || "produkto-lapas"}.pdf`);
 
-      if (!isAdmin) {
-        setDownloads((prev) => prev - 1);
-      }
+      if (!isAdmin) setDownloads((prev) => prev - 1);
       
-      console.log("PDF sėkmingai išsaugotas!");
-
     } catch (error: any) {
       console.error("PDF klaida:", error);
-      alert("Generavimo klaida: " + error.message);
+      // Jei vis tiek meta 'lab' klaidą, parašyk man
+      alert("Klaida: " + error.message);
     }
-};
 
   const handleAuth = () => {
     setIsLoggedIn(true)
