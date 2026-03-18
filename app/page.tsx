@@ -131,7 +131,7 @@ const handleDownload = async (currentProductData: ProductData) => {
       // Jei vis tiek meta 'lab' klaidą, parašyk man
       alert("Klaida: " + error.message);
     }
-
+}
   const handleAuth = () => {
     setIsLoggedIn(true)
     setShowAuthModal(false)
