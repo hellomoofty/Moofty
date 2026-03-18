@@ -92,31 +92,40 @@ const handleDownload = async (currentProductData: ProductData) => {
   }
 
   try {
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-    });
+      console.log("Pradedamas saugus generavimas...");
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true, // Padeda su nuotraukomis iš kitų serverių
+        backgroundColor: "#ffffff",
+      });
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
+      // Pakeičiame į JPEG – tai išspręs "unsupported format" klaidą
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
 
-    pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
-    const fileName = currentProductData.productName?.trim() || "produkto-lapas";
-    pdf.save(`${fileName}.pdf`);
+      // Naudojame JPEG formatą PDF viduje
+      pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+      
+      const fileName = currentProductData.productName?.trim() || "produkto-lapas";
+      pdf.save(`${fileName}.pdf`);
 
-    // Atimame siuntimą tik paprastam mirtingajam
-    if (!isAdmin) {
-      setDownloads((prev) => prev - 1);
+      if (!isAdmin) {
+        setDownloads((prev) => prev - 1);
+      }
+      
+      console.log("PDF sėkmingai išsaugotas!");
+
+    } catch (error: any) {
+      console.error("PDF klaida:", error);
+      alert("Generavimo klaida: " + error.message);
     }
-  } catch (error) {
-    console.error("PDF klaida:", error);
-    alert("Klaida generuojant PDF. Patikrinkite Console (F12).");
-  }
 };
 
   const handleAuth = () => {
