@@ -117,12 +117,12 @@ export default function ProductPreview({
             >
               {data.imageUrl ? (
                 // Pridėtas crossOrigin, kad veiktų nuotraukos iš kitų serverių
-                <img 
-                  src={data.imageUrl} 
-                  alt="Product" 
-                  crossOrigin="anonymous" 
-                  className="w-full h-full object-cover" 
-                />
+               <img 
+  src={data.imageUrl} 
+  alt="Product" 
+  crossOrigin="anonymous" 
+  className="w-full h-full object-contain" // PAKEISTA IŠ object-cover
+/>
               ) : (
                 <div className="flex items-center justify-center h-full text-slate-300 italic text-xs">Photo Space</div>
               )}
