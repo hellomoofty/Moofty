@@ -13,7 +13,7 @@ import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
 
 // Kadangi nebėra 4 šablonų, naudojame vieną pagrindinį "b2b-pro"
-export type Template = "b2b-pro"
+export type Template = string;
 
 export interface ProductData {
   productName: string
