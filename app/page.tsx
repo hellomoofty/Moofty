@@ -4,15 +4,13 @@ import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
 import { GeneratorPanel } from "@/components/generator-panel"
-import { PricingSection } from "@/components/pricing-section"
-import { ExamplesSection, type ExampleProduct } from "@/components/examples-section"
 import { TrustSection } from "@/components/trust-section"
 import { Footer } from "@/components/footer"
 import { AuthModal } from "@/components/auth-modal"
 import * as htmlToImage from 'html-to-image';
 import { jsPDF } from "jspdf";
+import { DownloadModal } from "@/components/DownloadModal";
 
-// Kadangi nebėra 4 šablonų, naudojame vieną pagrindinį "b2b-pro"
 export type Template = string;
 
 export interface ProductData {
@@ -42,80 +40,66 @@ export default function Home() {
   const [showGenerator, setShowGenerator] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [downloads, setDownloads] = useState(0)
   const [initialProductData, setInitialProductData] = useState<ProductData | undefined>(undefined)
+  
+  // NAUJA: Feedback modal būsena ir laikini duomenys atsisiuntimui
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
+  const [pendingProductData, setPendingProductData] = useState<ProductData | null>(null)
 
-  // PAGRINDINIS VEIKSMAS: Atidaro tuščią generatorių
   const handleStartGenerating = () => {
-    setInitialProductData(undefined) // Užtikriname, kad forma būtų tuščia
+    setInitialProductData(undefined)
     setShowGenerator(true)
     window.scrollTo(0, 0)
   }
 
-  // PAVYZDŽIO VEIKSMAS: Atidaro generatorių su pavyzdžio duomenimis
-  const handleExampleClick = (example: ExampleProduct) => {
-    setInitialProductData(example.data as any)
-    setShowGenerator(true)
-    window.scrollTo(0, 0)
+  // 1. Ši funkcija iškviečiama paspaudus "Download" generatoriuje
+  const handleDownloadTrigger = (currentProductData: ProductData) => {
+    setPendingProductData(currentProductData) // Išsaugojam duomenis, kuriuos vėliau spausdinsim
+    setShowDownloadModal(true) // Atidaro feedback langą
   }
 
-const handleDownload = async (currentProductData: ProductData) => {
-  if (!isLoggedIn) {
-    setShowAuthModal(true);
-    return;
-  }
+  // 2. Ši funkcija vykdoma, kai vartotojas patvirtina atsisiuntimą feedback lange
+  const executeRealDownload = async () => {
+    setShowDownloadModal(false)
+    if (!pendingProductData) return
 
-  const element = document.getElementById("product-sheet-pdf");
-  if (!element) return;
+    const element = document.getElementById("product-sheet-pdf")
+    if (!element) return
 
-  try {
-    console.log("Generuojama naudojant modernią biblioteką...");
+    try {
+      console.log("Generuojama...");
+      const dataUrl = await htmlToImage.toPng(element, {
+        quality: 1,
+        pixelRatio: 2,
+        skipFonts: false,
+      })
 
-    // 1. Sukuriame aukštos kokybės vaizdą (PNG)
-    // Ši funkcija puikiai supranta šešėlius ir lab() spalvas
-    const dataUrl = await htmlToImage.toPng(element, {
-      quality: 1,
-      pixelRatio: 2, // Užtikrina ryškumą
-      skipFonts: false,
-    });
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
 
-    // 2. Įdedame į PDF
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
-    pdf.addImage(dataUrl, "PNG", 0, 0, 210, 297);
-    
-    const title = currentProductData.productName?.trim() || "produkto-lapas";
-    pdf.save(`${title}.pdf`);
-
-    if (!isLoggedIn) { // Tavo admin logika čia
-      setDownloads((prev) => prev - 1);
+      pdf.addImage(dataUrl, "PNG", 0, 0, 210, 297)
+      const title = pendingProductData.productName?.trim() || "produkto-lapas"
+      pdf.save(`${title}.pdf`)
+      
+      console.log("Sėkmingai sugeneruota!")
+    } catch (error) {
+      console.error("PDF klaida:", error)
     }
-
-    console.log("PDF sėkmingai sugeneruotas!");
-  } catch (error: any) {
-    console.error("PDF klaida:", error);
-    alert("Net ir su nauja biblioteka iškilo bėda: " + error.message);
   }
-};
+
   const handleAuth = () => {
     setIsLoggedIn(true)
     setShowAuthModal(false)
   }
 
-  const handlePurchase = (downloadCount: number) => {
-    setDownloads((prev) => prev + downloadCount)
-  }
-
   return (
-    <main className="min-h-screen bg-background text-slate-900">
+    <main className="min-h-screen bg-white text-slate-900">
       {!showGenerator ? (
         <>
           <Navbar onLoginClick={() => setShowAuthModal(true)} isLoggedIn={isLoggedIn} />
-          
           <HeroSection
             onGenerateClick={handleStartGenerating}
             onViewExamples={() => {
@@ -123,39 +107,33 @@ const handleDownload = async (currentProductData: ProductData) => {
               examplesSection?.scrollIntoView({ behavior: "smooth" })
             }}
           />
-
-         {/* <section id="examples">
-            <ExamplesSection onExampleClick={handleExampleClick} />
-          </section>
-
-          <section id="pricing">
-            <PricingSection onPurchase={handlePurchase} isLoggedIn={isLoggedIn} />
-          </section> */}
-
           <TrustSection />
           <Footer />
         </>
       ) : (
-        /* GENERATORIAUS RĖŽIMAS */
         <GeneratorPanel
           template="b2b-pro"
           onBack={() => {
             setShowGenerator(false)
             setInitialProductData(undefined)
           }}
-          // Perduodame handleDownload. GeneratorPanel turės iškviesti ją su esamais duomenimis.
-          onDownload={handleDownload}
-          downloads={downloads}
+          onDownload={handleDownloadTrigger} // Naudojame naują funkciją
           isLoggedIn={isLoggedIn}
           initialData={initialProductData as any}
         />
       )}
 
-      {/* AUTENTIFIKACIJOS MODALAS */}
+      {/* MODALAI */}
       <AuthModal
         open={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onAuth={handleAuth}
+      />
+
+      <DownloadModal 
+        isOpen={showDownloadModal} 
+        onClose={() => setShowDownloadModal(false)} 
+        onConfirmDownload={executeRealDownload}
       />
     </main>
   )
