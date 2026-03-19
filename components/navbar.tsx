@@ -16,14 +16,14 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-3">
-          {/* Logo dalis tavo kode */}
-<div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg">
-  <FileText className="h-8 w-8 text-white" />
-</div>
-<span className="text-2xl font-black text-foreground tracking-tight">Moofty</span>
-        </a>
+       <a href="/" className="flex items-center gap-4"> {/* Padidintas tarpas tarp icon ir teksto: gap-4 */}
+  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md">
+    {/* Icon padidinta nuo h-5 iki h-7 */}
+    <FileText className="h-7 w-7 text-white" /> 
+  </div>
+  {/* Šriftas padidintas iki text-2xl, bet išlaikyta originali font-bold klasė */}
+  <span className="text-2xl font-bold text-foreground tracking-tight">Moofty</span>
+</a>
 
         {/* Navigation */}
         <nav className="flex items-center gap-6">
