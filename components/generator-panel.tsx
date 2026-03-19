@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { 
   ArrowLeft, Download, Plus, Trash2, Upload, 
   FileText, X, Edit2, Palette, Layers, Link, Link2Off,
-  Mail, Phone, Globe, Shield, RefreshCcw
+  Mail, Phone, Globe, Shield, RefreshCcw, ChevronUp, ChevronDown
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,21 +13,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProductPreview from "@/components/product-preview"
 import type { Template, ProductData } from "@/app/page"
 
-// Šita dalis užtikrina, kad ExtendedProductData nesipyktų su pagrindiniu ProductData
-// Pakeisk visą šitą bloką:
 interface ExtendedProductData extends Omit<ProductData, 'settings'> {
   brandName?: string;
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
   labels: Record<string, string>;
-  settings: any; // <--- Šitas "any" išspręs visas problemas su nesutampančiais laukais
+  settings: any;
 }
 
 interface GeneratorPanelProps {
   template: Template
   onBack: () => void
-  onDownload: (data: ExtendedProductData) => void // Pridėjom (data: ...)
+  onDownload: (data: ExtendedProductData) => void
   downloads?: number
   isLoggedIn: boolean
   initialData?: ExtendedProductData
@@ -117,6 +115,15 @@ export function GeneratorPanel({
     }
   }
 
+  // FUNKCIJA BLOKŲ STUMDYMUI
+  const moveBlock = (index: number, direction: 'up' | 'down') => {
+    const newSpecs = [...productData.specifications];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newSpecs.length) return;
+    [newSpecs[index], newSpecs[targetIndex]] = [newSpecs[targetIndex], newSpecs[index]];
+    setProductData(prev => ({ ...prev, specifications: newSpecs }));
+  };
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
       <aside className="w-[450px] flex flex-col border-r bg-white shadow-xl z-10">
@@ -134,12 +141,12 @@ export function GeneratorPanel({
               <Plus size={16} /> New Sheet
             </Button>
           </div>
-         <Button 
-  onClick={() => onDownload(productData)} // <--- ČIA SUTVARKYTA
-  className="rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all"
->
-  <Download size={16} className="mr-2" /> Export PDF
-</Button>
+          <Button 
+            onClick={() => onDownload(productData)}
+            className="rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all"
+          >
+            <Download size={16} className="mr-2" /> Export PDF
+          </Button>
         </header>
 
         <Tabs defaultValue="content" className="flex-1 overflow-hidden flex flex-col">
@@ -149,7 +156,27 @@ export function GeneratorPanel({
           </TabsList>
 
           <TabsContent value="content" className="flex-1 overflow-y-auto p-6 space-y-8 pb-24">
-            {/* IDENTITY */}
+            
+            {/* 1. PRODUCT IMAGE (Dabar viršuje) */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Product Photo</h3>
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-slate-200 rounded-xl h-48 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 overflow-hidden bg-slate-50 relative"
+              >
+                {productData.imageUrl ? (
+                  <img src={productData.imageUrl} className="w-full h-full object-contain" alt="Preview" />
+                ) : (
+                  <div className="text-center text-slate-400">
+                    <Upload size={24} className="mx-auto mb-2" />
+                    <span className="text-xs">Upload Photo</span>
+                  </div>
+                )}
+              </div>
+              <input ref={fileInputRef} type="file" hidden onChange={handleImageUpload} />
+            </section>
+
+            {/* 2. IDENTITY (Brand & Name) */}
             <section className="space-y-4">
               <h3 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Identity</h3>
               <div className="space-y-3">
@@ -162,100 +189,62 @@ export function GeneratorPanel({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs font-semibold text-slate-500">Product Image</Label>
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="mt-2 border-2 border-dashed border-slate-200 rounded-xl h-40 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 overflow-hidden relative"
-                  >
-                    {productData.imageUrl ? (
-                      <img src={productData.imageUrl} className="w-full h-full object-cover" />
+                  <div className="flex items-center justify-between mb-1">
+                    {editingLabel === 'productName' ? (
+                      <Input 
+                        autoFocus className="h-6 text-xs w-1/2"
+                        value={productData.labels.productName}
+                        onBlur={() => setEditingLabel(null)}
+                        onChange={(e) => updateLabel('productName', e.target.value)}
+                      />
                     ) : (
-                      <div className="text-center text-slate-400">
-                        <Upload size={24} className="mx-auto mb-2" />
-                        <span className="text-xs">Upload Photo</span>
-                      </div>
+                      <span className="text-xs font-bold flex items-center gap-2 uppercase text-slate-500">
+                        {productData.labels.productName} 
+                        <Edit2 size={12} className="cursor-pointer text-slate-400" onClick={() => setEditingLabel('productName')} />
+                      </span>
                     )}
                   </div>
-                  <input ref={fileInputRef} type="file" hidden onChange={handleImageUpload} />
+                  <Input 
+                    placeholder="e.g. iPhone 15 Pro"
+                    value={productData.productName}
+                    onChange={(e) => setProductData(p => ({ ...p, productName: e.target.value }))}
+                  />
                 </div>
               </div>
             </section>
 
-            {/* PRODUCT DETAILS */}
-            <section className="space-y-6">
-              <h3 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Product Details</h3>
-              
-              {/* Product Name Block */}
-              <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3">
-                <div className="flex items-center justify-between">
-                  {editingLabel === 'productName' ? (
-                    <Input 
-                      autoFocus className="h-6 text-xs w-1/2"
-                      value={productData.labels.productName}
-                      onBlur={() => setEditingLabel(null)}
-                      onChange={(e) => updateLabel('productName', e.target.value)}
-                    />
-                  ) : (
-                    <span className="text-xs font-bold flex items-center gap-2 uppercase text-slate-500">
-                      {productData.labels.productName} 
-                      <Edit2 size={12} className="cursor-pointer text-slate-400" onClick={() => setEditingLabel('productName')} />
-                    </span>
-                  )}
-                </div>
-                <Input 
-                  placeholder="e.g. iPhone 15 Pro"
-                  value={productData.productName}
-                  onChange={(e) => setProductData(p => ({ ...p, productName: e.target.value }))}
-                />
-              </div>
-
-             {/* PRICE & CURRENCY BLOCK */}
-              <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
-                    Price & Currency
-                  </Label>
-                  <div className="flex gap-1">
-                    {['€', '$', '£', 'CHF'].map((cur) => (
-                      <button
-                        key={cur}
-                        type="button"
-                        onClick={() => {
-                          // Jei kaina tuščia, tiesiog įdedam ženklą, jei ne - pridedam gale
-                          const currentPrice = productData.price.replace(/[€$£CHF]/g, '').trim();
-                          setProductData(p => ({ ...p, price: `${currentPrice} ${cur}`.trim() }));
-                        }}
-                        className="text-[10px] px-2 py-1 rounded bg-white border border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
-                      >
-                        {cur}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <Input 
-                  placeholder="e.g. 12.50 €"
-                  value={productData.price}
-                  onChange={(e) => setProductData(p => ({ ...p, price: e.target.value }))}
-                  className="font-bold text-indigo-600 bg-white"
-                />
-                <p className="text-[10px] text-slate-400 italic">
-                  Tip: Click a symbol above to add it automatically.
-                </p>
-              </div>
-              {/* SPEC BLOCKS */}
+            {/* 3. SPEC BLOCKS (Su stumdymo funkcija) */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Specifications / Blocks</h3>
               <div className="space-y-3">
-                <Label className="text-xs font-bold uppercase text-slate-500">Specifications / Blocks</Label>
                 {productData.specifications.map((spec, i) => (
-                  <div key={i} className="flex gap-2 items-start group bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
-                    <Input 
-                      placeholder="Label" value={spec.key}
-                      onChange={(e) => {
-                        const newSpecs = [...productData.specifications];
-                        newSpecs[i].key = e.target.value;
-                        setProductData(p => ({ ...p, specifications: newSpecs }));
-                      }}
-                      className="w-1/3 h-9 text-xs"
-                    />
+                  <div key={i} className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-slate-100 shadow-sm group">
+                    <div className="flex items-center justify-between border-b pb-2 mb-1">
+                      <Input 
+                        placeholder="Label" value={spec.key}
+                        onChange={(e) => {
+                          const newSpecs = [...productData.specifications];
+                          newSpecs[i].key = e.target.value;
+                          setProductData(p => ({ ...p, specifications: newSpecs }));
+                        }}
+                        className="w-2/3 h-7 text-xs font-bold border-none p-0 focus-visible:ring-0 uppercase bg-transparent"
+                      />
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveBlock(i, 'up')} disabled={i === 0}>
+                          <ChevronUp size={14} />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveBlock(i, 'down')} disabled={i === productData.specifications.length - 1}>
+                          <ChevronDown size={14} />
+                        </Button>
+                        <Button 
+                          variant="ghost" size="icon" 
+                          onClick={() => setProductData(p => ({ ...p, specifications: p.specifications.filter((_, idx) => idx !== i) }))}
+                          className="h-6 w-6 text-red-400 hover:text-red-600"
+                        >
+                          <X size={14} />
+                        </Button>
+                      </div>
+                    </div>
                     <Input 
                       placeholder="Value" value={spec.value}
                       onChange={(e) => {
@@ -263,28 +252,51 @@ export function GeneratorPanel({
                         newSpecs[i].value = e.target.value;
                         setProductData(p => ({ ...p, specifications: newSpecs }));
                       }}
-                      className="flex-1 h-9 text-xs font-semibold"
+                      className="h-8 text-xs border-none p-0 focus-visible:ring-0 font-medium"
                     />
-                    <Button 
-                      variant="ghost" size="icon" 
-                      onClick={() => setProductData(p => ({ ...p, specifications: p.specifications.filter((_, idx) => idx !== i) }))}
-                      className="h-9 w-9 text-red-400 hover:text-red-600"
-                    >
-                      <X size={16} />
-                    </Button>
                   </div>
                 ))}
                 <Button 
                   variant="outline" size="sm" 
                   onClick={() => setProductData(p => ({ ...p, specifications: [...p.specifications, { key: "", value: "" }] }))}
-                  className="w-full border-dashed text-xs h-10"
+                  className="w-full border-dashed text-xs h-10 hover:bg-slate-50"
                 >
                   <Plus size={14} className="mr-1" /> Add New Spec Block
                 </Button>
               </div>
             </section>
 
-            {/* CONTACTS */}
+            {/* 4. PRICE & CURRENCY */}
+            <section className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+                  Price & Currency
+                </Label>
+                <div className="flex gap-1">
+                  {['€', '$', '£', 'CHF'].map((cur) => (
+                    <button
+                      key={cur}
+                      type="button"
+                      onClick={() => {
+                        const currentPrice = productData.price.replace(/[€$£CHF]/g, '').trim();
+                        setProductData(p => ({ ...p, price: `${currentPrice} ${cur}`.trim() }));
+                      }}
+                      className="text-[10px] px-2 py-1 rounded bg-white border border-slate-200 hover:bg-indigo-50 transition-colors"
+                    >
+                      {cur}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Input 
+                placeholder="e.g. 12.50 €"
+                value={productData.price}
+                onChange={(e) => setProductData(p => ({ ...p, price: e.target.value }))}
+                className="font-bold text-indigo-600 bg-white"
+              />
+            </section>
+
+            {/* 5. CONTACTS */}
             <section className="space-y-4 pt-4 border-t">
               <h3 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Footer Contacts</h3>
               <div className="space-y-3">
