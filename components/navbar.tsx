@@ -14,18 +14,19 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
   }
 
   return (
-   <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-  <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-    
-    {/* Logo – Padidintas variantas */}
-    <a href="/" className="flex items-center gap-4"> 
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md">
-        <FileText className="h-7 w-7 text-white" /> 
-      </div>
-      <span className="text-2xl font-bold text-foreground tracking-tight">Moofty</span>
-    </a>
+    // Pakeista į bg-white ir nuimtas blur, kad būtų idealiai švaru
+    <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+        
+        {/* Logo – Padidintas variantas */}
+        <a href="/" className="flex items-center gap-4"> 
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md">
+            <FileText className="h-7 w-7 text-white" /> 
+          </div>
+          <span className="text-2xl font-bold text-foreground tracking-tight">Moofty</span>
+        </a>
 
-        {/* Navigation */}
+        {/* Navigation - Užkomentuota, kol nereikės */}
         {/* <nav className="flex items-center gap-6">
           <button
             onClick={scrollToPricing}
@@ -39,8 +40,9 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
           >
             {isLoggedIn ? "Account" : "Login"}
           </button>
-        </nav>
-      */}
+        </nav> 
+        */}
+
       </div>
     </header>
   )
