@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-const resend = new Resend('re_ULAi8Bs8_QF2doGYcPh5BoZZ8Xd4aVQMH'); // Įklijuok savo raktą
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
