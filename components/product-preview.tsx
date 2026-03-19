@@ -175,7 +175,26 @@ export default function ProductPreview({
             </div>
           )}
         </div>
-
+{/* --- MOOFTY LOGO SEKCIJA --- */}
+<div className="mt-auto pt-10 pb-4 flex flex-col items-center justify-center gap-1">
+  <div className="flex items-center gap-1.5 opacity-20 hover:opacity-40 transition-opacity">
+    {/* Čia tavo ikona (pvz. Lucide Zap arba SVG) */}
+    <svg 
+      width="12" 
+      height="12" 
+      viewBox="0 0 24 24" 
+      fill="black" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </svg>
+    
+    <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-black">
+      Generated with Moofty
+    </span>
+  </div>
+</div>
+{/* --- SEKCIJOS PABAIGA --- */}
         {/* FOOTERIS */}
         <div 
           className="mt-auto px-12 py-10 flex justify-between items-center text-white relative z-10"
