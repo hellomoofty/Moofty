@@ -18,10 +18,11 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         {/* Logo */}
         <a href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-md">
-            <FileText className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-foreground">Moofty</span>
+          {/* Logo dalis tavo kode */}
+<div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg">
+  <FileText className="h-8 w-8 text-white" />
+</div>
+<span className="text-2xl font-black text-foreground tracking-tight">Moofty</span>
         </a>
 
         {/* Navigation */}
