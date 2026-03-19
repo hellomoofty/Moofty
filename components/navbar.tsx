@@ -32,8 +32,8 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Pricing
-         {/* </button>
-          <button */}
+          </button>
+          <button
             onClick={onLoginClick}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
