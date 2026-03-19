@@ -124,13 +124,13 @@ const handleDownload = async (currentProductData: ProductData) => {
             }}
           />
 
-          <section id="examples">
+         {/* <section id="examples">
             <ExamplesSection onExampleClick={handleExampleClick} />
           </section>
 
           <section id="pricing">
             <PricingSection onPurchase={handlePurchase} isLoggedIn={isLoggedIn} />
-          </section>
+          </section> */}
 
           <TrustSection />
           <Footer />
