@@ -28,7 +28,7 @@ interface GeneratorPanelProps {
   template: Template
   onBack: () => void
   onDownload: (data: ExtendedProductData) => void // Pridėjom (data: ...)
-  downloads: number
+  downloads?: number
   isLoggedIn: boolean
   initialData?: ExtendedProductData
 }
