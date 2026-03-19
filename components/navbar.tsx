@@ -26,7 +26,7 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
 </a>
 
         {/* Navigation */}
-        <nav className="flex items-center gap-6">
+        {/* <nav className="flex items-center gap-6">
           <button
             onClick={scrollToPricing}
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -40,6 +40,7 @@ export function Navbar({ onLoginClick, isLoggedIn }: NavbarProps) {
             {isLoggedIn ? "Account" : "Login"}
           </button>
         </nav>
+      */}
       </div>
     </header>
   )
