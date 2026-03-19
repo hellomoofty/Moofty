@@ -175,24 +175,27 @@ export default function ProductPreview({
             </div>
           )}
         </div>
-{/* --- MOOFTY LOGO SEKCIJA --- */}
-<div className="mt-auto pt-10 pb-4 flex flex-col items-center justify-center gap-1">
-  <div className="flex items-center gap-1.5 opacity-20 hover:opacity-40 transition-opacity">
-    {/* Čia tavo ikona (pvz. Lucide Zap arba SVG) */}
-    <svg 
-      width="12" 
-      height="12" 
-      viewBox="0 0 24 24" 
-      fill="black" 
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-    </svg>
+{/* --- MOOFTY BRANDING SEKCIJA --- */}
+<div className="mt-auto pt-10 pb-4 flex flex-col items-center justify-center gap-1.5 grayscale opacity-30 hover:opacity-100 transition-all duration-500">
+  <div className="flex items-center gap-2">
     
-    <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-black">
-      Generated with Moofty
+    {/* Ta pati ikona iš tavo Navbar, tik mažesnė */}
+    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-900 shadow-sm">
+      <FileText className="h-3.5 w-3.5 text-white" /> 
+    </div>
+    
+    {/* Tas pats šriftas ir stilius kaip Navbar */}
+    <span className="text-xs font-bold text-slate-900 tracking-tight">
+      Moofty
     </span>
+    
   </div>
+  
+  {/* Mažas papildomas tekstas po logo */}
+  <span className="text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+    Generated with
+  </span>
+</div>
 </div>
 {/* --- SEKCIJOS PABAIGA --- */}
         {/* FOOTERIS */}
