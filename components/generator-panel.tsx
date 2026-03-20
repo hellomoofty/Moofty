@@ -151,7 +151,7 @@ return (
               variant="outline" 
               size="sm" 
               onClick={handleNewSheet}
-              className="gap-2 text-amber-600 border-amber-200 hover:bg-amber-50"
+              className="gap-2 text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-indigo-600 transition-colors"
             >
               <Plus size={16} /> New Sheet
             </Button>
