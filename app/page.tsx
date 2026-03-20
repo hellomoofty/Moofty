@@ -100,13 +100,7 @@ export default function Home() {
       {!showGenerator ? (
         <>
           <Navbar onLoginClick={() => setShowAuthModal(true)} isLoggedIn={isLoggedIn} />
-          <HeroSection
-            onGenerateClick={handleStartGenerating}
-            onViewExamples={() => {
-              const examplesSection = document.getElementById("examples")
-              examplesSection?.scrollIntoView({ behavior: "smooth" })
-            }}
-          />
+         
           <TrustSection />
           <Footer />
         </>
