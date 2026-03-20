@@ -132,7 +132,7 @@ export function GeneratorPanel({
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm">
         <FileText className="h-4.5 w-4.5 text-white" />
       </div>
-      <span className="text-lg font-bold text-slate-900 tracking-tight italic">Moofty</span>
+      <span className="text-lg font-bold text-slate-900 tracking-tight ">Moofty</span>
     </div>
     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
       Editor
