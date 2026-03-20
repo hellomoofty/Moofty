@@ -100,8 +100,10 @@ export default function Home() {
       {!showGenerator ? (
         <>
           <Navbar onLoginClick={() => setShowAuthModal(true)} isLoggedIn={isLoggedIn} />
-         onGenerateClick={handleStartGenerating} 
-/>
+          
+          {/* ŠTAI ČIA PATAISYTA: Pridėtas <HeroSection */}
+          <HeroSection onGenerateClick={handleStartGenerating} />
+          
           <TrustSection />
           <Footer />
         </>
@@ -112,12 +114,11 @@ export default function Home() {
             setShowGenerator(false)
             setInitialProductData(undefined)
           }}
-          onDownload={handleDownloadTrigger} // Naudojame naują funkciją
+          onDownload={handleDownloadTrigger}
           isLoggedIn={isLoggedIn}
           initialData={initialProductData as any}
         />
       )}
-
       {/* MODALAI */}
       <AuthModal
         open={showAuthModal}
