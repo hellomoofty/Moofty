@@ -124,20 +124,25 @@ export function GeneratorPanel({
     setProductData(prev => ({ ...prev, specifications: newSpecs }));
   };
 
-  return (
-    <div className="px-6 py-4 border-b flex items-center justify-between bg-slate-50/50 shrink-0">
-  <div className="flex items-center gap-3">
-    {/* Naudojami tie patys kintamieji: from-primary to-accent */}
-    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
-      <FileText className="h-6 w-6 text-white" />
-    </div>
-    <span className="text-xl font-bold text-slate-900 tracking-tight">Moofty</span>
-  </div>
-  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-    Editor
-  </div>
-</div>
-        <header className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-20">
+return (
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
+      <aside className="w-[450px] flex flex-col border-r bg-white shadow-xl z-10">
+        
+        {/* LOGO DALIS */}
+        <div className="px-6 py-4 border-b flex items-center justify-between bg-slate-50/50 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
+              <FileText className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">Moofty</span>
+          </div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Editor
+          </div>
+        </div>
+
+        {/* VALDYMO DALIS */}
+        <header className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-20 shrink-0">
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
               <ArrowLeft size={16} /> Back
