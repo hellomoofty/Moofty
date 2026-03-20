@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { Template, ProductData } from "@/app/page"
-// Pridėtas FileText prie importų
 import { Mail, Globe, Phone, CheckCircle2, AlertCircle, FileText } from "lucide-react"
 
 interface ExtendedProductData extends Omit<ProductData, 'settings'> {
@@ -119,7 +118,7 @@ export default function ProductPreview({
                     src={data.imageUrl} 
                     alt="Product" 
                     crossOrigin="anonymous" 
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover" // PAKEISTA: object-cover, kad užpildytų visą plotą
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-slate-300 italic text-xs">Photo Space</div>
@@ -174,19 +173,20 @@ export default function ProductPreview({
             )}
           </div>
 
-          {/* MOOFTY BRANDING - Dabar teisingoje vietoje (virš footerio) */}
-          <div className="mt-auto pt-10 pb-6 flex flex-col items-center justify-center gap-1.5 opacity-30 grayscale hover:opacity-100 transition-all duration-500">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-900 shadow-sm">
-                <FileText className="h-3.5 w-3.5 text-white" /> 
+          {/* MOOFTY BRANDING - VIENOJE EILUTĖJE + SPALVOTAS */}
+          <div className="mt-auto pt-10 pb-6 flex items-center justify-center gap-2 opacity-40 hover:opacity-100 transition-all duration-500">
+            <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">
+              Generated with
+            </span>
+            <div className="flex items-center gap-1.5">
+              {/* Spalvota ikona kaip tavo Navbar */}
+              <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm">
+                <FileText className="h-3 w-3 text-white" /> 
               </div>
-              <span className="text-xs font-bold text-slate-900 tracking-tight">
+              <span className="text-sm font-bold text-slate-900 tracking-tight">
                 Moofty
               </span>
             </div>
-            <span className="text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Generated with
-            </span>
           </div>
         </div>
 
