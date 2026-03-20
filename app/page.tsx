@@ -100,7 +100,8 @@ export default function Home() {
       {!showGenerator ? (
         <>
           <Navbar onLoginClick={() => setShowAuthModal(true)} isLoggedIn={isLoggedIn} />
-         
+         onGenerateClick={handleStartGenerating} 
+/>
           <TrustSection />
           <Footer />
         </>
