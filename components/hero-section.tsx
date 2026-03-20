@@ -52,13 +52,15 @@ export function HeroSection({ onGenerateClick }: HeroSectionProps) {
             </p>
           </div>
 
-          {/* DEŠINĖ PUSĖ: Tavo naujas paveikslėlis */}
+        {/* DEŠINĖ PUSĖ: Paveikslėlis iš public aplanko */}
           <div className="relative lg:block hidden">
             <div className="relative z-10 rounded-[2rem] border-[8px] border-slate-900/5 bg-white p-2 shadow-2xl rotate-2 transition-transform duration-500 hover:rotate-0">
               <img 
-                src="https://i.postimg.cc/KvrKj6f0/613aaee2-1.png" 
+                src="/hero-preview.png" 
                 alt="Moofty Product Sheet Example" 
                 className="rounded-[1.5rem] w-full h-auto shadow-sm"
+                fetchPriority="high"
+                loading="eager"
               />
             </div>
 
@@ -69,7 +71,7 @@ export function HeroSection({ onGenerateClick }: HeroSectionProps) {
                   <CheckCircle className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Status</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Status</p>
                   <p className="text-sm font-bold text-slate-900 leading-none">Ready to Export</p>
                 </div>
               </div>
